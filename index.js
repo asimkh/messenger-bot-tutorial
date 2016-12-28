@@ -1,5 +1,17 @@
 'use strict'
 
+
+require('dotenv').config({path: './.env'})
+
+// Messenger API parameters
+const FB_PAGE_TOKEN = process.env.FB_PAGE_TOKEN;
+
+var FB_VERIFY_TOKEN = process.env.FB_VERIFY_TOKEN;
+if (!FB_VERIFY_TOKEN) {
+   throw new Error('missing FB_VERIFY_TOKEN');
+}
+
+
 const express = require('express')
 const bodyParser = require('body-parser')
 const request = require('request')
@@ -20,7 +32,7 @@ app.get('/', function (req, res) {
 
 // for facebook verification
 app.get('/webhook/', function (req, res) {
-	if (req.query['hub.verify_token'] === 'my_voice_is_my_password_verify_me') {
+	if (req.query['hub.verify_token'] === FB_VERIFY_TOKEN) {
 		res.send(req.query['hub.challenge'])
 	}
 	res.send('Error, wrong token')
@@ -52,7 +64,7 @@ app.post('/webhook/', function (req, res) {
 
 // recommended to inject access tokens as environmental variables, e.g.
 // const token = process.env.PAGE_ACCESS_TOKEN
-const token = "<PAGE_ACCESS_TOKEN>"
+const token = FB_VERIFY_TOKEN
 
 function sendTextMessage(sender, text) {
 	let messageData = { text:text }
